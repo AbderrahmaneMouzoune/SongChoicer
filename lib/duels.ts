@@ -23,31 +23,24 @@ export function generateDuels(songs: Song[]): SongVersus[] {
   // [QLF, Naha]
   // [QLF, Bene]
   // [Bene, Naha]
-  const allDuelsPossible: [Song, Song][] = Array.from({
-    length: songCount,
-  }).flatMap((_, i) =>
-    Array.from({ length: songCount - i - 1 }, (_, j) => [
-      songs[i],
-      songs[i + j + 1],
-    ])
-  ) as [Song, Song][]
+  const allDuelsPossible: SongVersus[] = generateAllPairPossible(songs)
   shuffleArray(allDuelsPossible)
 
   // On veux retourner MAX_N duel.
   // Avec au moin chaque son dans duels
-  const duels: [Song, Song][] = []
+  const duels: SongVersus[] = []
 
-  const findFirstDuelsOfASong = (songIdToFind: number): [Song, Song] =>
+  const findFirstDuelsOfASong = (songIdToFind: number): SongVersus =>
     allDuelsPossible.find(
       ([songA, songB]) => songA.id === songIdToFind || songB.id === songIdToFind
-    ) as [Song, Song]
+    ) as SongVersus
 
   // Trouve la première paire de chansons contenant au moins un ID désiré et aucun ID à éviter
   function findPairWithDesiredIdsAndNoAvoidIds(
     desiredIds: number[],
     avoidIds: number[],
-    allDuels: [Song, Song][]
-  ): [Song, Song] | undefined {
+    allDuels: SongVersus[]
+  ): SongVersus | undefined {
     return allDuels.find(([songA, songB]) => {
       const includesDesiredId =
         desiredIds.includes(songA.id) || desiredIds.includes(songB.id)
@@ -60,8 +53,8 @@ export function generateDuels(songs: Song[]): SongVersus[] {
   // Trouve la première paire de chansons contenant uniquement des IDs désirés
   function findPairWithOnlyDesiredIds(
     desiredIds: number[],
-    allDuels: [Song, Song][]
-  ): [Song, Song] | undefined {
+    allDuels: SongVersus[]
+  ): SongVersus | undefined {
     return allDuels.find(([songA, songB]) => {
       const bothDesiredIds =
         desiredIds.includes(songA.id) && desiredIds.includes(songB.id)
@@ -72,8 +65,8 @@ export function generateDuels(songs: Song[]): SongVersus[] {
   // Trouve la première paire de chansons contenant uniquement des IDs non désirés
   function findPairWithNoAvoidIds(
     avoidIds: number[],
-    allDuels: [Song, Song][]
-  ): [Song, Song] | undefined {
+    allDuels: SongVersus[]
+  ): SongVersus | undefined {
     return allDuels.find(([songA, songB]) => {
       const noAvoidId =
         !avoidIds.includes(songA.id) && !avoidIds.includes(songB.id)
@@ -85,8 +78,8 @@ export function generateDuels(songs: Song[]): SongVersus[] {
   function findFirstDuelsOfASongWithoutAnotherSongId(
     desiredIds: number[],
     avoidIds: number[],
-    allDuels: [Song, Song][]
-  ): [Song, Song] {
+    allDuels: SongVersus[]
+  ): SongVersus {
     let pair = findPairWithDesiredIdsAndNoAvoidIds(
       desiredIds,
       avoidIds,
@@ -105,11 +98,7 @@ export function generateDuels(songs: Song[]): SongVersus[] {
   }
 
   songs.map((song) => {
-    // 1 - 3
-    // 1 - 4
-    // 3 - 1
     duels.push(findFirstDuelsOfASong(song.id))
-    shuffleArray(allDuelsPossible)
   })
 
   // At this stade we have songs.length as possible duel
@@ -142,7 +131,6 @@ export function generateDuels(songs: Song[]): SongVersus[] {
     )
 
     duels.push(possiblePairToAdd)
-    shuffleArray(allDuelsPossible)
     trackSongUsed = countHowMuchTimeThisSoungAppear(duels)
 
     if (duels.length >= MAX_DUEL(songCount)) {
@@ -153,7 +141,7 @@ export function generateDuels(songs: Song[]): SongVersus[] {
   return duels
 }
 
-function generateAllPairPossible(songs: Song[]): SongVersus[] {
+export function generateAllPairPossible(songs: Song[]): SongVersus[] {
   return songs
     .flatMap((song, i) =>
       songs.slice(i + 1).map((otherSong) => [song, otherSong])
@@ -174,6 +162,6 @@ function generateAllPairPossible(songs: Song[]): SongVersus[] {
 //   return song
 // }
 
-// export function generateNextDuel(song: SongWithElo[]): [Song, Song] {
+// export function generateNextDuel(song: SongWithElo[]): SongVersus {
 //   return [getSongWithoutElo(song[0]), getSongWithoutElo(song[1])]
 // }

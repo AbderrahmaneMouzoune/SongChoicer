@@ -1,5 +1,9 @@
 import { MAX_DUEL } from '@/config'
-import { countHowMuchTimeThisSoungAppear, generateDuels } from '@/lib/duels'
+import {
+  countHowMuchTimeThisSoungAppear,
+  generateAllPairPossible,
+  generateDuels,
+} from '@/lib/duels'
 import '@testing-library/jest-dom'
 
 describe('generateDuels', () => {
@@ -17,6 +21,20 @@ describe('generateDuels', () => {
 
   it(`should have 10 songs`, () => {
     expect(songs.length).toBe(10)
+  })
+
+  it(`should not have the same pair`, () => {
+    const possibleUniquePairs = generateAllPairPossible(songs)
+    const expectedNumberDuels = (songs.length * (songs.length - 1)) / 2
+    expect(possibleUniquePairs.length).toBe(expectedNumberDuels)
+
+    // Vérifie qu'il n'y a pas de paires en double
+    const pairIds = new Set<string>()
+    possibleUniquePairs.forEach(([songA, songB]) => {
+      const pairId = `${songA.id}-${songB.id}`
+      expect(pairIds.has(pairId)).toBe(false) // Vérifie qu'aucune paire n'est déjà présente
+      pairIds.add(pairId)
+    })
   })
 
   it(`should generate less/equal than ${MAX_DUEL(songs.length)} duels`, () => {
