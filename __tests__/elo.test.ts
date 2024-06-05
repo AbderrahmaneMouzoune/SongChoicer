@@ -1,4 +1,3 @@
-import { Song } from '@/app/lib/types'
 import { MAX_DUEL } from '@/config'
 import { countHowMuchTimeThisSoungAppear, generateDuels } from '@/lib/duels'
 import '@testing-library/jest-dom'

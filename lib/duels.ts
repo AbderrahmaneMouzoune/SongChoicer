@@ -1,8 +1,7 @@
-import { Song } from '@/app/lib/types'
 import { MAX_DUEL } from '@/config'
 import { shuffleArray } from './utils'
 
-export const countHowMuchTimeThisSoungAppear = (songs: [Song, Song][]) => {
+export const countHowMuchTimeThisSoungAppear = (songs: SongVersus[]) => {
   let idCount: Record<number, number> = {}
   songs.forEach((subArr) => {
     subArr.forEach((obj) => {
@@ -16,7 +15,7 @@ export const countHowMuchTimeThisSoungAppear = (songs: [Song, Song][]) => {
   return idCount
 }
 // Must generate duels with at least all song
-export function generateDuels(songs: Song[]): [Song, Song][] {
+export function generateDuels(songs: Song[]): SongVersus[] {
   const songCount = songs.length
 
   // Tout les duels possibles.
@@ -106,6 +105,9 @@ export function generateDuels(songs: Song[]): [Song, Song][] {
   }
 
   songs.map((song) => {
+    // 1 - 3
+    // 1 - 4
+    // 3 - 1
     duels.push(findFirstDuelsOfASong(song.id))
     shuffleArray(allDuelsPossible)
   })
@@ -149,6 +151,17 @@ export function generateDuels(songs: Song[]): [Song, Song][] {
   }
 
   return duels
+}
+
+function generateAllPairPossible(songs: Song[]): SongVersus[] {
+  return songs
+    .flatMap((song, i) =>
+      songs.slice(i + 1).map((otherSong) => [song, otherSong])
+    )
+    .reduce<SongVersus[]>((acc: SongVersus[], curr) => {
+      acc.push(curr as SongVersus)
+      return acc
+    }, [])
 }
 
 // Gonna be implement in v2 when we take account of precedent rank
