@@ -1,4 +1,4 @@
-import { MAX_DUEL } from '@/config'
+import { MAX_DUEL, MAX_DUEL_NUMBER } from '@/config'
 import { shuffleArray } from './utils'
 
 export const countHowMuchTimeThisSoungAppear = (songs: SongVersus[]) => {
@@ -17,12 +17,6 @@ export const countHowMuchTimeThisSoungAppear = (songs: SongVersus[]) => {
 // Must generate duels with at least all song
 export function generateDuels(songs: Song[]): SongVersus[] {
   const songCount = songs.length
-
-  // Tout les duels possibles.
-  // [QLF, Naha, Bene] ->
-  // [QLF, Naha]
-  // [QLF, Bene]
-  // [Bene, Naha]
   const allDuelsPossible: SongVersus[] = generateAllPairPossible(songs)
   shuffleArray(allDuelsPossible)
 
@@ -94,9 +88,16 @@ export function generateDuels(songs: Song[]): SongVersus[] {
     if (pair) return pair
 
     // Si aucune paire n'est trouvée, renvoie simplement la première paire disponible
+    shuffleArray(allDuels)
     return allDuels[0]
   }
 
+  // Cas où on a moin de MAX_DUEL_NUMBER possibilité
+  if (allDuelsPossible.length < MAX_DUEL_NUMBER) {
+    return allDuelsPossible
+  }
+
+  // Cas où on a + de MAX_DUEL_NUMBER
   songs.map((song) => {
     duels.push(findFirstDuelsOfASong(song.id))
   })
@@ -104,7 +105,6 @@ export function generateDuels(songs: Song[]): SongVersus[] {
   // At this stade we have songs.length as possible duel
   // So we need to fill maximumDuel - songs.length
   let trackSongUsed = countHowMuchTimeThisSoungAppear(duels)
-
   while (duels.length < MAX_DUEL(songCount)) {
     const minCount = Math.min(...Object.values(trackSongUsed))
     const maxCount = Math.max(...Object.values(trackSongUsed))

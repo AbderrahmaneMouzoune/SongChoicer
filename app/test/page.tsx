@@ -4,7 +4,7 @@ import SongRanker from '@/components/SongRanker'
 import { generateDuels } from '@/lib/duels'
 
 export default function Home() {
-  const songs: Song[] = Array.from({ length: 10 })
+  const songs: Song[] = Array.from({ length: 4 })
     .fill(null)
     .map((_, index) => ({
       id: index,

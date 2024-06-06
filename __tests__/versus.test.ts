@@ -6,8 +6,10 @@ import {
 } from '@/lib/duels'
 import '@testing-library/jest-dom'
 
+const NUMBER_OF_TRACK = 4
+
 describe('generateDuels', () => {
-  const songs: Song[] = Array.from({ length: 10 })
+  const songs: Song[] = Array.from({ length: NUMBER_OF_TRACK })
     .fill(null)
     .map((_, index) => ({
       id: index,
@@ -19,8 +21,8 @@ describe('generateDuels', () => {
       },
     }))
 
-  it(`should have 10 songs`, () => {
-    expect(songs.length).toBe(10)
+  it(`should have ${NUMBER_OF_TRACK} songs`, () => {
+    expect(songs.length).toBe(NUMBER_OF_TRACK)
   })
 
   it(`should not have the same pair`, () => {
